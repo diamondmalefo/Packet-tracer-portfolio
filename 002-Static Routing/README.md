@@ -18,3 +18,47 @@ The network is split into 4 separate subnets to ensure proper segmentation and t
 * **WAN AB (Transit):** Point-to-point backbone highway linking Router A to Router B.
 * **WAN BC (Transit):** Point-to-point backbone highway linking Router B to Router C.
 * **LAN C (Internal):** End-user segment managed by Router C.
+
+
+### IP Addressing Schema
+| Device / Segment | Interface | IP Address | Subnet Mask | Default Gateway |
+| :--- | :--- | :--- | :--- | :--- |
+| **PC-A** | FastEthernet0 | `192.168.1.10` | `255.255.255.0` | `192.168.1.1` |
+| **RouterA** | Gig0/0 (LAN A) | `192.168.1.1` | `255.255.255.0` | N/A |
+| **RouterA** | Gig0/1 (WAN AB)| `192.168.2.1` | `255.255.255.0` | N/A |
+| **RouterB** | Gig0/0 (WAN AB)| `192.168.2.2` | `255.255.255.0` | N/A |
+| **RouterB** | Gig0/1 (WAN BC)| `192.168.3.1` | `255.255.255.0` | N/A |
+| **RouterC** | Gig0/0 (WAN BC)| `192.168.3.2` | `255.255.255.0` | N/A |
+| **RouterC** | Gig0/1 (LAN C) | `192.168.4.1` | `255.255.255.0` | N/A |
+| **PC-C** | FastEthernet0 | `192.168.4.10` | `255.255.255.0` | `192.168.4.1` |
+
+---
+
+## Routing Table Configuration
+
+Because routers only recognize directly connected networks by default, static routes were implemented to handle multi-hop forwarding. Traffic logic requires explicit entry and return paths.
+
+### Router A (Edge Router)
+Directly connects to `192.168.1.0` and `192.168.2.0`. Forwarding paths point to **Router B** (`192.168.2.2`):
+```
+ip route 192.168.3.0 255.255.255.0 192.168.2.2
+ip route 192.168.4.0 255.255.255.0 192.168.2.2
+
+ip route 192.168.1.0 255.255.255.0 192.168.2.1
+ip route 192.168.4.0 255.255.255.0 192.168.3.2
+```
+## Router B (Core/Transit Router)
+Directly connects to transit networks 192.168.2.0 and 192.168.3.0. Forwards left-bound traffic to Router A (192.168.2.1) and right-bound traffic to Router C (192.168.3.2):
+
+```
+ip route 192.168.1.0 255.255.255.0 192.168.2.1
+ip route 192.168.4.0 255.255.255.0 192.168.3.2
+```
+
+## Router C (Edge Router)
+Directly connects to 192.168.3.0 and 192.168.4.0. Forwarding paths point back to Router B (192.168.3.1):
+
+```
+ip route 192.168.1.0 255.255.255.0 192.168.3.1
+ip route 192.168.2.0 255.255.255.0 192.168.3.1
+```
