@@ -22,9 +22,10 @@ Rather than utilizing generic consumer-grade equipment, this topology models ind
 
 The physical design separates devices based on mobility, security, and throughput needs:
 1. **The Backbone (Router & Switch):** A Cisco 1941 Router connects to a Cisco 2960 Switch over a 1 Gbps GigabitEthernet link, forming the high-speed trunk of the local network.
-2. **High-Speed Wired Segment:** The **Smart TV** is hardwired directly to the switch using copper Ethernet (Cat6) to guarantee interference-free, maximum throughput for streaming.
-3. **The Static Office Segment:** The **Office Printer** is wired to the switch and assigned a fixed, static IP address. This ensures its network address never shifts, preventing client connection errors.
-4. **Secure Wireless Segment:** The autonomous **Access Point (AP)** broadcasts a secure Wi-Fi signal (`SOHO_WiFi`) encrypted with WPA2-PSK (AES). The **Laptop** authenticates wirelessly to maintain total physical mobility.
+2. **High-Speed Wired Segment:** one of the laptops is hardwired directly to the switch using copper Ethernet to guarantee interference-free, maximum throughput for streaming.
+3. The other laptop, mobile phone, and tablet are connected via a wireless Access point
+4. **The Static Office Segment:** The **Office Printer** is wired to the switch and assigned a fixed, static IP address. This ensures its network address never shifts, preventing client connection errors.
+5. **Secure Wireless Segment:** The autonomous **Access Point (AP)** broadcasts a secure Wi-Fi signal (`SOHO_WiFi`) encrypted with WPA2-PSK (AES). All the **wireless devices** authenticate wirelessly to maintain total physical mobility.
 
 ---
 
@@ -42,8 +43,10 @@ To maintain clean management, the IP address space is structured logically:
 | :--- | :--- | :--- | :--- | :--- | :--- |
 | **SOHO-Router** | Physical Link | **Static** | `192.168.1.1` | `255.255.255.0` | N/A |
 | **Office-Printer** | Wired (Cat6) | **Static** | `192.168.1.10` | `255.255.255.0` | `192.168.1.1` |
-| **SOHO-Laptop** | Wireless (802.11n) | **Dynamic (DHCP)** | `192.168.1.21` | `255.255.255.0` | `192.168.1.1` |
-| **Smart-TV** | Wired (Cat6) | **Dynamic (DHCP)** | `192.168.1.22` | `255.255.255.0` | `192.168.1.1` |
+| **SOHO-Laptop Wireless** | Wireless (802.11n) | **Dynamic (DHCP)** | `192.168.1.21-254` | `255.255.255.0` | `192.168.1.1` |
+| **SOHO-Laptop Wired** | Wired (Cat6) | **Dynamic (DHCP)** | `192.168.1.22` | `255.255.255.0` | `192.168.1.1` |
+| **SOHO-Mobile Phone** | Wireless (802.11n) | **Dynamic (DHCP)** | `192.168.1.21-254` | `255.255.255.0` | `192.168.1.1` |
+| **SOHO-Tablet** | Wireless (802.11n) | **Dynamic (DHCP)** | `192.168.1.21-254` | `255.255.255.0` | `192.168.1.1` |
 
 ---
 
